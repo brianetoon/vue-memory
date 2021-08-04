@@ -1,9 +1,12 @@
 <template>
     <div class="board">
-        <div class="square" 
-            v-for="(image, index) in shuffledImages" :key="index"
-            @click="handleClick">
-            <img :src="require(`@/assets/images/${image}`)" :alt="image" class="">
+        <div class="square" v-for="(image, index) in shuffledImages" :key="index">
+            <img :src="require(`@/assets/images/${image}.jpg`)" 
+                :alt="image"
+                :name="image"
+                class="active"
+                @click="handleClick"
+            >
         </div>
     </div>
 </template>
@@ -13,22 +16,46 @@ import { ref } from '@vue/reactivity'
 export default {
     setup() {
         const images = ref([
-            'beach.jpg',
-            'bubbles.jpg',
-            'coast.jpg',
-            'nature.jpg',
-            'night.jpg',
-            'skyline.jpg',
-            'solarsystem.jpg',
-            'squares.jpg'
+            'beach',
+            'bubbles',
+            'coast',
+            'nature',
+            'night',
+            'skyline',
+            'solarsystem',
+            'squares'
         ])
 
         const doubleImages = [...images.value, ...images.value]
+        const shuffledImages = doubleImages.sort(() => Math.random() - 0.5)
 
-        const shuffledImages = doubleImages.sort(() => Math.random() - 0.5)      
+        const comparing = ref([])
 
         const handleClick = (e) => {
-            e.target.classList.toggle('hidden')
+            // check if class list does not already contain disabled
+            if (e.target.classList.contains('active')) {
+                e.target.classList.remove('active')
+                comparing.value.push(e.target)
+                console.log(comparing.value)
+                if (comparing.value.length === 2) {
+                    if (comparing.value[0].name === comparing.value[1].name) {
+                        console.log('match!')
+                        // run animation for match
+                    } else {
+                        comparing.value.forEach(item => {
+                            setTimeout(() => {
+                                item.classList.add('active')
+                            }, 1000)
+                            // run animatiom for no match
+                        })
+                        console.log('not a match')
+                    }
+                    comparing.value = []
+                }
+            } else {
+                console.log('click a different square')
+            }
+
         }
 
         return { handleClick, shuffledImages }
@@ -48,7 +75,6 @@ export default {
 .square {
     grid-column: span 1;
     position: relative;
-    cursor: pointer;
     background: grey;
     border-radius: 5px;
 }
@@ -56,8 +82,9 @@ export default {
     display: block;
     width: 100%;
     border-radius: 5px;
+    cursor: pointer;
 }
-img.hidden {
+img.active {
     opacity: 0;
 }
 </style>
