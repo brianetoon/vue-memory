@@ -1,18 +1,20 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h2>Home</h2>
+    <button @click="showBoard = !showBoard">Toggle Board</button>
+    <Board v-if="showBoard"/>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
+import Board from '@/components/Board.vue'
+import { ref } from '@vue/reactivity'
 export default {
-  name: 'Home',
-  components: {
-    HelloWorld
+  components: { Board },
+  setup() {
+    const showBoard = ref(true)
+
+    return { showBoard }
   }
 }
 </script>
