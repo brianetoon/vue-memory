@@ -1,7 +1,7 @@
 <template>
   <div class="home">
-    <h2>Home</h2>
-    <button @click="showBoard = !showBoard">Toggle Board</button>
+    <h2>Memory</h2>
+    <button @click="showBoard = !showBoard">Play</button>
     <Board v-if="showBoard"/>
   </div>
 </template>
@@ -12,9 +12,15 @@ import { ref } from '@vue/reactivity'
 export default {
   components: { Board },
   setup() {
-    const showBoard = ref(true)
+    const showBoard = ref(false)
 
     return { showBoard }
   }
 }
 </script>
+
+<style>
+button {
+  margin-bottom: 20px;
+}
+</style>
