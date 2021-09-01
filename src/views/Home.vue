@@ -12,14 +12,20 @@
         <button @click="jump" v-if="showBoard">Jump</button>
       </div>
 
-      <form class="imageset">
-        <label for="imageset">Image Set: </label>
-        <select v-model="imageset">
-          <option v-for="(set, index) in imagesets" :key="index" :value="set">
-            {{ set.name }}
-          </option>
-        </select>
-      </form>
+      <!-- <div class="select-and-timer"> -->
+        
+        <Timer />
+
+        <form class="imageset" v-if="showForm">
+          <label for="imageset">Image Set: </label>
+          <select v-model="imageset">
+            <option v-for="(set, index) in imagesets" :key="index" :value="set">
+              {{ set.name }}
+            </option>
+          </select>
+        </form>
+
+      <!-- </div> -->
 
     </div>
 
@@ -31,20 +37,24 @@
 import store from '@/store.js'
 import gsap from 'gsap'
 import Board from '@/components/Board.vue'
+import Timer from '@/components/Timer.vue'
 import { ref } from '@vue/reactivity'
 
 export default {
-  components: { Board },
+  components: { Board, Timer },
   setup() {
     const imagesets = ref(store.imagesets)
     let imageset = ref(imagesets.value[0])
+    
     const showBoard = ref(false)
+    const showForm = ref(true)
 
     const jump = () => {
       gsap.timeline()
-        .to('.card', {y:-15, duration:0.3, stagger:{amount:0.3, ease:"power1"}})
+        .to('.card', {y:-15, duration:0.3, repeat:1, yoyo:true,
+                      stagger:{amount:0.3, ease:"power1"}})
         .to('.card', {scale:1.05, duration:0.3, repeat:1, yoyo:true})
-        .to('.card', {y:0, duration:0.3, stagger:{amount:0.3}})
+        // .to('.card', {y:0, duration:0.3, stagger:{amount:0.3}})
     }
 
     const quitGame = () => {
@@ -59,7 +69,9 @@ export default {
 
     const completeGame = () => { 
       gsap.timeline({delay:0.75})
-        .to('.card', {y:-15, duration:0.3, stagger:{amount:0.3, ease:'power1'}})
+        .to('.card', {y:-15, duration:0.3, repeat:1, yoyo:true,
+                      stagger:{amount:0.3, ease:"power1"}})
+        .to('.card', {scale:1.05, delay:0.3, duration:0.3, repeat:1, yoyo:true})
         .to('.card', {opacity:0, y:-180, duration:0.8, stagger:{amount:0.8}, 
                         ease:'back.in', onComplete:toggleBoard})
         .to('form', {x:0, opacity:1, delay:0.5, ease:'back'})
@@ -68,8 +80,11 @@ export default {
     function toggleBoard() {
       showBoard.value = !showBoard.value
     }
+    function toggleForm() {
+      showForm.value = !showForm.value
+    }
 
-    return { showBoard, imageset, imagesets, startGame, quitGame, completeGame, jump }
+    return { showBoard, showForm, imageset, imagesets, startGame, quitGame, completeGame, jump }
   }
 }
 </script>
