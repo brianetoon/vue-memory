@@ -9,14 +9,12 @@
           Quit
         </button>
         <button @click="completeGame" v-if="showBoard">Win</button>
-        <button @click="jump" v-if="showBoard">Jump</button>
+        <button @click="toggleTimer" v-if="showBoard">Timer</button>
+        <button @click="reset" v-if="showBoard">Reset</button>
       </div>
 
-      <!-- <div class="select-and-timer"> -->
-        
-        <Timer />
-
-        <form class="imageset" v-if="showForm">
+      <div class="select-and-timer">
+        <form class="imageset">
           <label for="imageset">Image Set: </label>
           <select v-model="imageset">
             <option v-for="(set, index) in imagesets" :key="index" :value="set">
@@ -25,11 +23,12 @@
           </select>
         </form>
 
-      <!-- </div> -->
+        <Timer ref="timer" />
+      </div>
 
     </div>
 
-    <Board :imageset="imageset" @complete="completeGame" v-if="showBoard"/>
+    <Board :imageset="imageset" @complete="completeGame" @showtimer="showTimer" v-if="showBoard"/>
   </div>
 </template>
 
@@ -39,28 +38,26 @@ import gsap from 'gsap'
 import Board from '@/components/Board.vue'
 import Timer from '@/components/Timer.vue'
 import { ref } from '@vue/reactivity'
+import { onMounted } from '@vue/runtime-core'
 
 export default {
   components: { Board, Timer },
   setup() {
     const imagesets = ref(store.imagesets)
-    let imageset = ref(imagesets.value[0])
+    let imageset = ref(store.imagesets[0])
     
     const showBoard = ref(false)
-    const showForm = ref(true)
+    const timer = ref(null)
 
-    const jump = () => {
-      gsap.timeline()
-        .to('.card', {y:-15, duration:0.3, repeat:1, yoyo:true,
-                      stagger:{amount:0.3, ease:"power1"}})
-        .to('.card', {scale:1.05, duration:0.3, repeat:1, yoyo:true})
-        // .to('.card', {y:0, duration:0.3, stagger:{amount:0.3}})
-    }
+    onMounted(() => {
+      gsap.set('.timer', {x:400, opacity:0})
+    })
 
     const quitGame = () => {
-      gsap.timeline()
-        .to('.board', {y:200, opacity:0, onComplete:toggleBoard})
-        .to('form', {x:0, opacity:1, ease:'back'})
+      gsap.timeline({onStart:toggleTimer, onComplete:reset})
+        .to('.timer', {x:400, opacity:0})
+        .to('.board', {y:200, opacity:0, onComplete:toggleBoard}, '<')
+        .to('form', {x:0, opacity:1, delay:0.5, ease:'back'})
     }
 
     const startGame = () => {
@@ -68,23 +65,49 @@ export default {
     }
 
     const completeGame = () => { 
-      gsap.timeline({delay:0.75})
+      gsap.timeline({delay:0.75, onStart:toggleTimer, onComplete:reset})
         .to('.card', {y:-15, duration:0.3, repeat:1, yoyo:true,
                       stagger:{amount:0.3, ease:"power1"}})
         .to('.card', {scale:1.05, delay:0.3, duration:0.3, repeat:1, yoyo:true})
         .to('.card', {opacity:0, y:-180, duration:0.8, stagger:{amount:0.8}, 
                         ease:'back.in', onComplete:toggleBoard})
+        .to('.timer', {x:400, opacity:0})
         .to('form', {x:0, opacity:1, delay:0.5, ease:'back'})
     }
 
-    function toggleBoard() {
-      showBoard.value = !showBoard.value
+    // stops & starts the timer
+    const toggleTimer = () => {
+      if (timer.value.isRunning) {
+        timer.value.stopTimer()
+        return
+      }
+      timer.value.startTimer()
     }
-    function toggleForm() {
-      showForm.value = !showForm.value
+    // resets the timer
+    const reset = () => {
+      timer.value.resetTimer()
     }
 
-    return { showBoard, showForm, imageset, imagesets, startGame, quitGame, completeGame, jump }
+    const showTimer = () => {
+      gsap.to('.timer', {x:0, opacity:1, ease:'back', onComplete:toggleTimer})
+    }
+
+    const toggleBoard = () => {
+      showBoard.value = !showBoard.value
+    }
+
+    return { 
+      showBoard,
+      imageset,
+      imagesets,
+      startGame,
+      quitGame,
+      completeGame,
+      showTimer,
+      toggleTimer,
+      timer,
+      reset
+    }
   }
 }
 </script>
@@ -109,5 +132,13 @@ label {
 .quit {
   background: crimson;
   color: white;
+}
+.select-and-timer {
+  position: relative;
+}
+.timer {
+  position: absolute;
+  right: 0;
+  top: 6px;
 }
 </style>

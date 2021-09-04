@@ -19,7 +19,7 @@ import { onMounted } from '@vue/runtime-core'
 
 export default {
     props: ['imageset'],
-    emits: ['complete'],
+    emits: ['complete', 'showtimer'],
     setup(props, { emit }) {
         const imageset = props.imageset
         const folder = imageset.folder
@@ -29,9 +29,12 @@ export default {
         const doubleImages = [...slicedImages, ...slicedImages]
         const shuffledImages = doubleImages.sort(() => Math.random() - 0.5)
 
-        let playing = ref(false)
-        const startPlaying = () => playing.value = true
         const matches = ref(0)
+        let playing = ref(false)
+        const startPlaying = () => {
+            playing.value = true
+            emit('showtimer')
+        } 
 
         onMounted(() => {
             gsap.timeline({onComplete: startPlaying})
