@@ -29,8 +29,10 @@ export default {
         const doubleImages = [...slicedImages, ...slicedImages]
         const shuffledImages = doubleImages.sort(() => Math.random() - 0.5)
 
+        const clicks = ref(0)
         const matches = ref(0)
         let playing = ref(false)
+
         const startPlaying = () => {
             playing.value = true
             emit('showtimer')
@@ -41,7 +43,7 @@ export default {
                 .set('.card', {transformStyle: "preserve-3d", transformPerspective: 1000})
                 .set('.face', {transformStyle: "preserve-3d", transformOrigin: "50% 50%"})
                 .set('.back', {rotationY: 180, rotationZ: 180})
-                .from('.card', {y: 150, stagger: 0.08, opacity: 0, duration: 0.5})
+                .from('.card', {y: 200, stagger: 0.08, opacity: 0, duration: 0.5})
                 .to('.card', {rotationX:"+=180", duration:0.6, stagger:{ amount:0.75}})
         })
 
@@ -50,7 +52,7 @@ export default {
         const updateMatches = () => {
             matches.value++
             if (matches.value === slicedImages.length) {
-                emit('complete')
+                emit('complete', clicks.value)
             }
         }
 
@@ -59,6 +61,7 @@ export default {
         const handleClick = (e) => {
             let card = e.currentTarget
             if (card.classList.contains('active') && comparing.value.length < 2 && playing.value) {
+                clicks.value++
                 card.classList.remove('active')
                 gsap.to(card, {rotationX: "+=180", duration: 0.6, onComplete: push})
 

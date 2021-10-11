@@ -8,8 +8,8 @@
 import { ref } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core'
 export default {
-    props: [],
-    setup() {
+    emits: ['reset'],
+    setup(props, { emit }) {
         const timer = ref(null)
         const isRunning = ref(false)
         const seconds = ref(0)
@@ -32,6 +32,7 @@ export default {
         }
 
         const resetTimer = () => {
+            emit('reset', { minutes:formattedMinutes.value, seconds:formattedSeconds.value })
             seconds.value = 0
             minutes.value = 0
         }

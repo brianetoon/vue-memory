@@ -8,6 +8,9 @@
         <button class="quit" @click="quitGame" v-if="showBoard">
           Quit
         </button>
+
+        <!-- test buttons -->
+        <button @click="showResults = !showResults" v-if="!showBoard">Results</button>
         <button @click="completeGame" v-if="showBoard">Win</button>
         <button @click="toggleTimer" v-if="showBoard">Timer</button>
         <button @click="reset" v-if="showBoard">Reset</button>
@@ -23,12 +26,13 @@
           </select>
         </form>
 
-        <Timer ref="timer" />
+        <Timer ref="timer" @reset="getTime" />
       </div>
 
     </div>
 
-    <Board :imageset="imageset" @complete="completeGame" @showtimer="showTimer" v-if="showBoard"/>
+    <Board :imageset="imageset" @complete="completeGame" @showtimer="showTimer" v-if="showBoard" />
+    <Results @close="closeResults" v-if="showResults" :results="results" />
   </div>
 </template>
 
@@ -37,34 +41,50 @@ import store from '@/store.js'
 import gsap from 'gsap'
 import Board from '@/components/Board.vue'
 import Timer from '@/components/Timer.vue'
+import Results from '@/components/Results.vue'
 import { ref } from '@vue/reactivity'
 import { onMounted } from '@vue/runtime-core'
 
 export default {
-  components: { Board, Timer },
+  components: { Board, Timer, Results },
   setup() {
     const imagesets = ref(store.imagesets)
     let imageset = ref(store.imagesets[0])
     
     const showBoard = ref(false)
+    const showResults = ref(false)
     const timer = ref(null)
+    const results = ref({
+      imageset,
+      time: null,
+      clicks: null,
+    })
 
     onMounted(() => {
       gsap.set('.timer', {x:400, opacity:0})
     })
 
     const quitGame = () => {
-      gsap.timeline({onStart:toggleTimer, onComplete:reset})
+      if (timer.value.isRunning) {
+        gsap.timeline({onStart:toggleTimer, onComplete:reset})
         .to('.timer', {x:400, opacity:0})
         .to('.board', {y:200, opacity:0, onComplete:toggleBoard}, '<')
-        .to('form', {x:0, opacity:1, delay:0.5, ease:'back'})
+        .to('form', {x:0, opacity:1, delay:0.3, ease:'back'})
+      }
     }
 
     const startGame = () => {
-      gsap.to('form', {x:400, opacity:0, onStart:toggleBoard})
+      if (showResults.value) {
+        gsap.timeline()
+          .to('.results', {scale:0.3, duration:0.4, opacity:0, onComplete:toggleResults})
+          .to('form', {x:400, opacity:0, delay:0.5, onStart:toggleBoard})
+      } else {
+        gsap.to('form', {x:400, opacity:0, onStart:toggleBoard})
+      }
     }
 
-    const completeGame = () => { 
+    const completeGame = (_clicks) => {
+      results.value.clicks = _clicks
       gsap.timeline({delay:0.75, onStart:toggleTimer, onComplete:reset})
         .to('.card', {y:-15, duration:0.3, repeat:1, yoyo:true,
                       stagger:{amount:0.3, ease:"power1"}})
@@ -72,7 +92,7 @@ export default {
         .to('.card', {opacity:0, y:-180, duration:0.8, stagger:{amount:0.8}, 
                         ease:'back.in', onComplete:toggleBoard})
         .to('.timer', {x:400, opacity:0})
-        .to('form', {x:0, opacity:1, delay:0.5, ease:'back'})
+        .to('form', {x:0, opacity:1, delay:0.5, ease:'back', onComplete:toggleResults})
     }
 
     // stops & starts the timer
@@ -92,8 +112,20 @@ export default {
       gsap.to('.timer', {x:0, opacity:1, ease:'back', onComplete:toggleTimer})
     }
 
+    const getTime = (_time) => {
+      results.value.time = _time
+    }
+
     const toggleBoard = () => {
       showBoard.value = !showBoard.value
+    }
+
+    const closeResults = () => {
+      gsap.to('.results', {scale:0.3, duration:0.4, opacity:0, onComplete:toggleResults})
+    }
+
+    const toggleResults = () => {
+      showResults.value = !showResults.value
     }
 
     return { 
@@ -105,7 +137,11 @@ export default {
       completeGame,
       showTimer,
       toggleTimer,
+      getTime,
+      closeResults,
+      showResults,
       timer,
+      results,
       reset
     }
   }
