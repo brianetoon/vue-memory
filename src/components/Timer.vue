@@ -6,7 +6,7 @@
 
 <script>
 import { ref } from '@vue/reactivity'
-import { computed, onMounted } from '@vue/runtime-core'
+import { computed } from '@vue/runtime-core'
 export default {
     emits: ['reset'],
     setup(props, { emit }) {
@@ -36,8 +36,6 @@ export default {
             seconds.value = 0
             minutes.value = 0
         }
-
-        // onMounted(() => startTimer())
 
         const formattedSeconds = computed(() => {
             if (seconds.value === 0) return '00'

@@ -1,13 +1,15 @@
 <template>
-    <div class="board">
+    <div class="board grid">
         <div class="card active" v-for="(image, index) in shuffledImages" 
-                :key="index" 
-                :name="image"
-                @click="handleClick">
-            <div class="back face"></div>
-            <img :src="require(`@/assets/images/${folder}/${image}.jpg`)" 
-                :alt="image"
-                class="front face">
+            :key="index" 
+            :name="image"
+            @click="handleClick"
+        >
+        <div class="back face"></div>
+        <img :src="require(`@/assets/images/${folder}/${image}.jpg`)" 
+            :alt="image"
+            class="front face"
+        >
         </div>
     </div>
 </template>
@@ -99,7 +101,7 @@ export default {
 </script>
 
 <style>
-.board {
+.grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 12px;

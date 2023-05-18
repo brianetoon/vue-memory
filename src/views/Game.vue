@@ -2,18 +2,18 @@
   <div class="container">
     <div class="game-nav">
       <div class="buttons">
-        <button class="play" @click="startGame" v-if="!showBoard">
+        <button class="accent-btn" @click="startGame" v-if="!showBoard">
           Play
         </button>
-        <button class="quit" @click="quitGame" v-if="showBoard">
+        <button class="warning-btn" @click="quitGame" v-if="showBoard">
           Quit
         </button>
 
-        <!-- test buttons -->
-        <button @click="showResults = !showResults" v-if="!showBoard">Results</button>
-        <button @click="completeGame" v-if="showBoard">Win</button>
-        <button @click="toggleTimer" v-if="showBoard">Timer</button>
-        <button @click="reset" v-if="showBoard">Reset</button>
+        <!-- Test Buttons: -->
+        <!-- <button @click="showResults = !showResults" v-if="!showBoard">Results</button> -->
+        <!-- <button @click="completeGame" v-if="showBoard">Win</button> -->
+        <!-- <button @click="toggleTimer" v-if="showBoard">Timer</button> -->
+        <!-- <button @click="reset" v-if="showBoard">Reset</button> -->
       </div>
 
       <div class="select-and-timer">
@@ -33,20 +33,22 @@
 
     <Board :imageset="imageset" @complete="completeGame" @showtimer="showTimer" v-if="showBoard" />
     <Results @close="closeResults" v-if="showResults" :results="results" />
+    <Preview :imageset="imageset" />
   </div>
 </template>
 
 <script>
+import { ref } from '@vue/reactivity'
+import { onMounted } from '@vue/runtime-core'
 import store from '@/store.js'
 import gsap from 'gsap'
 import Board from '@/components/Board.vue'
 import Timer from '@/components/Timer.vue'
 import Results from '@/components/Results.vue'
-import { ref } from '@vue/reactivity'
-import { onMounted } from '@vue/runtime-core'
+import Preview from '@/components/Preview.vue'
 
 export default {
-  components: { Board, Timer, Results },
+  components: { Board, Timer, Results, Preview },
   setup() {
     const imagesets = ref(store.imagesets)
     let imageset = ref(store.imagesets[0])
@@ -60,6 +62,10 @@ export default {
       clicks: null,
     })
 
+    // TO DO: 
+    // Move animations into separate files for ease of maintenance
+    // Store animations in variables for reusability
+
     onMounted(() => {
       gsap.set('.timer', {x:400, opacity:0})
     })
@@ -67,9 +73,10 @@ export default {
     const quitGame = () => {
       if (timer.value.isRunning) {
         gsap.timeline({onStart:toggleTimer, onComplete:reset})
-        .to('.timer', {x:400, opacity:0})
-        .to('.board', {y:200, opacity:0, onComplete:toggleBoard}, '<')
-        .to('form', {x:0, opacity:1, delay:0.3, ease:'back'})
+          .to('.timer', {x:400, opacity:0})
+          .to('.board', {y:200, opacity:0, onComplete:toggleBoard}, '<')
+          .to('form', {x:0, opacity:1, delay:0.3, ease:'back'})
+          .to('.preview', {y:0, opacity: 1})
       }
     }
 
@@ -79,7 +86,9 @@ export default {
           .to('.results', {scale:0.3, duration:0.4, opacity:0, onComplete:toggleResults})
           .to('form', {x:400, opacity:0, delay:0.5, onStart:toggleBoard})
       } else {
-        gsap.to('form', {x:400, opacity:0, onStart:toggleBoard})
+        gsap.timeline()
+          .to('.preview', {y:150, opacity:0, duration:0.4})
+          .to('form', {x:400, opacity:0, delay:0.1, onStart:toggleBoard})
       }
     }
 
@@ -121,7 +130,9 @@ export default {
     }
 
     const closeResults = () => {
-      gsap.to('.results', {scale:0.3, duration:0.4, opacity:0, onComplete:toggleResults})
+      gsap.timeline()
+        .to('.results', {scale:0.3, duration:0.4, opacity:0, onComplete:toggleResults})
+        .to('.preview', {y:0, opacity: 1})
     }
 
     const toggleResults = () => {
@@ -161,11 +172,11 @@ label {
   font-weight: bold;
   margin-right: 10px;
 }
-.play {
-  background: teal;
+.accent-btn {
+  background: var(--accent);
   color: white;
 }
-.quit {
+.warning-btn {
   background: crimson;
   color: white;
 }

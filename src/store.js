@@ -12,34 +12,15 @@ export default {
                 "night",
                 "skyline",
                 "solarsystem",
-                "squares"
+                "squares",
+                "sandbar",
+                "boats",
+                "balloon",
+                "sunset"
             ]
         },
         {
             id: 2,
-            name: "Gentleman",
-            folder: "gentleman",
-            images: [
-                "bc",
-                "duanedeathstare",
-                "rc",
-                "gfy",
-                "hough",
-                "jerry",
-                "tp",
-                "ryang",
-                "lukie",
-                "dion",
-                "approval",
-                "steve",
-                "butch",
-                "fj",
-                "reject",
-                "rubix"
-            ]
-        },
-        {
-            id: 3,
             name: "Dogs",
             folder: "dogs",
             images: [
@@ -52,24 +33,28 @@ export default {
                 "yawn",
                 "sleepy",
                 "banana",
-                "goldenpuppy"
+                "goldenpuppy",
+                "golden",
+                "pupincup"
             ]
         },
         {
-            id: 4,
-            name: "Ninjas",
-            folder: "ninjas",
+            id: 3,
+            name: "Sports",
+            folder: "sports",
             images: [
-                "ayane",
-                "donatello",
-                "hayate",
-                "kasumi",
-                "leonardo",
-                "michaelangelo",
-                "nadyasonika",
-                "rafael",
-                "ryu",
-                "ryuclose"
+                "dunk",
+                "golfball",
+                "hockeyplayers",
+                "pitcher",
+                "skier",
+                "soccerball",
+                "soccerplayer",
+                "swish",
+                "tenniscourts",
+                "touchdown",
+                "track",
+                "volleyball"
             ]
         }
     ]

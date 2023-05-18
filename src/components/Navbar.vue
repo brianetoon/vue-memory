@@ -6,9 +6,11 @@
                     <h1>Memory</h1>
                 </div>
                 <div class="nav-links">
-                    <a href="">High Scores</a>
-                    <a href="">Sign up</a>
-                    <a href="">Log in</a>
+                    <router-link to="/high-scores">
+                        High Scores
+                    </router-link>
+                    <!-- <a href="">Sign up</a> -->
+                    <!-- <a href="">Log in</a> -->
                 </div>
             </div>
         </div>

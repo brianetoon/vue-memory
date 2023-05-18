@@ -14,10 +14,6 @@
             <p>Clicks:</p>
             <p>{{ results.clicks }}</p>
         </div>
-        <div class="details">
-            <p>Score:</p>
-            <p>1205</p>
-        </div>
     </div>
 </template>
 
