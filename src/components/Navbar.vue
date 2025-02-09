@@ -25,7 +25,7 @@ export default {
 
 <style>
 .main-nav {
-    background: white;
+    background: #fff;
 }
 .nav-content {
     display: flex;

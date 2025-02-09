@@ -1,15 +1,15 @@
 <template>
     <div class="board grid">
-        <div class="card active" v-for="(image, index) in shuffledImages" 
-            :key="index" 
+        <div class="card active" v-for="image in shuffledImages" 
+            :key="image" 
             :name="image"
             @click="handleClick"
         >
-        <div class="back face"></div>
-        <img :src="require(`@/assets/images/${folder}/${image}.jpg`)" 
-            :alt="image"
-            class="front face"
-        >
+            <div class="back face"></div>
+            <img :src="require(`@/assets/images/${folder}/${image}.jpg`)" 
+                :alt="image"
+                class="front face"
+            >
         </div>
     </div>
 </template>

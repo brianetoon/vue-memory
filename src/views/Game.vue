@@ -20,7 +20,7 @@
         <form class="imageset">
           <label for="imageset">Image Set: </label>
           <select v-model="imageset">
-            <option v-for="(set, index) in imagesets" :key="index" :value="set">
+            <option v-for="set in imagesets" :key="set.name" :value="set">
               {{ set.name }}
             </option>
           </select>
